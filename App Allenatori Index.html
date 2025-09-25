@@ -207,32 +207,45 @@
     </footer>
 
     <div id="modals-container"></div>
-
+    
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+
+        // =================================================================================
+        // SUPABASE SETUP - INSERISCI QUI LE TUE CREDENZIALI
+        // =================================================================================
+        const SUPABASE_URL = 'https://dmkmuggtlaqijajwzmqs.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRta211Z2d0bGFxaWphand6bXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDQ3MTAsImV4cCI6MjA3NDM4MDcxMH0.OWec4gRapM2UYj8-6U9-Vp485FSjpSG2QcUQcgFMtrY'; 
+
+        if (SUPABASE_URL === 'IL_TUO_URL_PROGETTO' || SUPABASE_ANON_KEY === 'LA_TUA_CHIAVE_ANON_PUBBLICA') {
+            alert('Per favore, inserisci le tue credenziali Supabase nel file HTML per far funzionare l\'applicazione!');
+            return; 
+        }
+
+        const { createClient } = supabase;
+        const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // =================================================================================
+
 
         const modalsContainer = document.getElementById('modals-container');
         modalsContainer.innerHTML = `
             <div class="modal fade" id="evaluationModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Valutazione di <span id="modal-athlete-name-eval"></span></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="evaluation-form"><input type="hidden" id="modal-athlete-id-eval"><p>Data: <strong id="modal-evaluation-date"></strong></p><div class="mb-2"><label class="form-label">Presenza Allenamento</label><select id="presenza-allenamento" class="form-select"><option value="0">0-NV</option><option value="1">1-B</option><option value="2">2-M</option><option value="3">3-A</option></select></div><div class="mb-2"><label class="form-label">Serietà Allenamento</label><select id="serieta-allenamento" class="form-select"><option value="0">0-NV</option><option value="1">1-B</option><option value="2">2-M</option><option value="3">3-A</option></select></div><div class="mb-2"><label class="form-label">Abbigliamento Allenamento</label><select id="abbigliamento-allenamento" class="form-select"><option value="0">0-NV</option><option value="1">1-B</option><option value="2">2-M</option><option value="3">3-A</option></select></div><div class="mb-2"><label class="form-label">Abbigliamento Partita</label><select id="abbigliamento-partita" class="form-select"><option value="0">0-NV</option><option value="1">1-B</option><option value="2">2-M</option><option value="3">3-A</option></select></div><div class="mb-2"><label class="form-label">Serietà Comunicazioni</label><select id="comunicazioni" class="form-select"><option value="0">0-NV</option><option value="1">1-B</option><option value="2">2-M</option><option value="3">3-A</option></select></div><div class="mb-2"><label class="form-label">Doccia (Opzionale)</label><select id="doccia" class="form-select"><option value="0">0-NV</option><option value="1">1-B</option><option value="2">2-M</option><option value="3">3-A</option></select></div><div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="award-checkbox"><label class="form-check-label" for="award-checkbox">Assegna Premio</label></div></form></div><div class="modal-footer justify-content-between"><button type="button" class="btn btn-outline-danger" id="delete-single-athlete-day-btn">Elimina Dati del Giorno</button><div><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button><button type="submit" class="btn btn-primary-custom" form="evaluation-form">Salva Valutazione</button></div></div></div></div></div>
-            <div class="modal fade" id="athleteModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="athleteModalLabel">Gestisci Atleta</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="athlete-form"><input type="hidden" id="modal-athlete-id"><div class="mb-3"><label class="form-label">Nome Cognome</label><input type="text" class="form-control" id="athlete-name" required></div><div class="mb-3"><label class="form-label">URL Foto Profilo</label><input type="url" class="form-control" id="athlete-avatar" placeholder="https://esempio.com/foto.png"></div><div class="mb-3"><label class="form-label">Ruolo</label><input type="text" class="form-control" id="athlete-role" required></div><div class="mb-3"><label class="form-label">Numero Maglia</label><input type="number" class="form-control" id="athlete-number" required min="1"></div><div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="athlete-captain"><label class="form-check-label" for="athlete-captain">Capitano</label></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button><button type="submit" class="btn btn-primary-custom" form="athlete-form">Salva Atleta</button></div></div></div></div>
-            <div class="modal fade" id="gpsModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="gpsModalLabel">Dati Performance di <span id="modal-athlete-name-gps"></span></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="gps-form"><input type="hidden" id="modal-athlete-id-gps">
+            <div class="modal fade" id="athleteModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="athleteModalLabel">Gestisci Atleta</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="athlete-form"><input type="hidden" id="modal-athlete-id"><div class="mb-3"><label class="form-label">Nome Cognome</label><input type="text" class="form-control" id="athlete-nome_cognome" required></div><div class="mb-3"><label class="form-label">URL Foto Profilo</label><input type="url" class="form-control" id="athlete-url_foto" placeholder="https://esempio.com/foto.png"></div><div class="mb-3"><label class="form-label">Ruolo</label><input type="text" class="form-control" id="athlete-ruolo" required></div><div class="mb-3"><label class="form-label">Numero Maglia</label><input type="number" class="form-control" id="athlete-numero_maglia" required min="1"></div><div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="athlete-is_capitano"><label class="form-check-label" for="athlete-is_capitano">Capitano</label></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button><button type="submit" class="btn btn-primary-custom" form="athlete-form">Salva Atleta</button></div></div></div></div>
+            <div class="modal fade" id="gpsModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="gpsModalLabel">Dati Performance di <span id="modal-athlete-name-gps"></span></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="gps-form"><input type="hidden" id="modal-athlete-id-gps"><input type="hidden" id="modal-session-id-gps">
                 <div class="row mb-3"><div class="col-md-8"><label for="gps-session-selector" class="form-label">Seleziona Sessione Esistente per Modificare</label><select id="gps-session-selector" class="form-select"><option value="">--- Inserisci Nuova Sessione ---</option></select></div><div class="col-md-4 d-flex align-items-end"><button type="button" id="delete-gps-session-btn" class="btn btn-outline-danger w-100" disabled>Elimina Sessione</button></div></div><hr>
-                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Data Registrazione</label><input type="date" class="form-control" id="gps-data_di_registrazione" required></div><div class="col-md-4 mb-3"><label class="form-label">Tipo Sessione</label><select class="form-select" id="gps-tipo_sessione"><option value="Allenamento">Allenamento</option><option value="Partita">Partita</option><option value="Individual">Individual</option></select></div><div class="col-md-4 mb-3"><label class="form-label">Distanza Totale (m)</label><input type="number" step="0.1" class="form-control" id="gps-distanza_totale" placeholder="es. 10500"></div></div>
-                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Tempo Totale (min)</label><input type="number" step="0.1" class="form-control" id="gps-tempo_totale" placeholder="es. 92"></div><div class="col-md-4 mb-3"><label class="form-label">Distanza Sprint (m)</label><input type="number" step="0.1" class="form-control" id="gps-distanza_sprint"></div><div class="col-md-4 mb-3"><label class="form-label">Velocità Massima (km/h)</label><input type="number" step="0.1" class="form-control" id="gps-velocita_massima"></div></div>
-                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Numero di Sprint</label><input type="number" class="form-control" id="gps-numero_di_sprint"></div><div class="col-md-4 mb-3"><label class="form-label">Max Acc (g)o(n°)</label><input type="number" step="0.1" class="form-control" id="gps-max_acc"></div><div class="col-md-4 mb-3"><label class="form-label">Max Dec (g)o(n°)</label><input type="number" step="0.1" class="form-control" id="gps-max_dec"></div></div>
-                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Passaggi Piede Sinistro</label><input type="number" class="form-control" id="gps-passaggi_piede_sinistro"></div><div class="col-md-4 mb-3"><label class="form-label">Passaggi Piede Destro</label><input type="number" class="form-control" id="gps-passaggi_piede_destro"></div><div class="col-md-4 mb-3"><label class="form-label">Cross Piede Sinistro</label><input type="number" step="0.1" class="form-control" id="gps-cross_piede_sinistro"></div></div>
-                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Cross Piede Destro</label><input type="number" step="0.1" class="form-control" id="gps-cross_piede_destro"></div><div class="col-md-4 mb-3"><label class="form-label">Potenza Massima di Tiro (km/h)</label><input type="number" step="0.1" class="form-control" id="gps-potenza_massima_di_tiro"></div><div class="col-md-4 mb-3"><label class="form-label">Distanza per Minuto (m/min)</label><input type="number" step="0.1" class="form-control" id="gps-distanza_per_minuto" readonly></div></div>
-                <div class="row"><div class="col-md-3 mb-3"><label class="form-label">Tiri Piede SX</label><input type="number" class="form-control" id="gps-tiri_piede_sx"></div><div class="col-md-3 mb-3"><label class="form-label">Tiri Piede DX</label><input type="number" class="form-control" id="gps-tiri_piede_dx"></div><div class="col-md-3 mb-3"><label class="form-label">% Passaggi Brevi</label><input type="number" step="0.1" class="form-control" id="gps-perc_passaggi_brevi"></div><div class="col-md-3 mb-3"><label class="form-label">% Lanci</label><input type="number" step="0.1" class="form-control" id="gps-perc_lanci"></div></div>
-
+                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Data Registrazione</label><input type="date" class="form-control" id="gps-data_registrazione" required></div><div class="col-md-4 mb-3"><label class="form-label">Tipo Sessione</label><select class="form-select" id="gps-tipo_sessione"><option value="Allenamento">Allenamento</option><option value="Partita">Partita</option><option value="Individual">Individual</option></select></div><div class="col-md-4 mb-3"><label class="form-label">Distanza Totale (m)</label><input type="number" step="0.1" class="form-control" id="gps-distanza_totale_m" placeholder="es. 10500"></div></div>
+                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Tempo Totale (min)</label><input type="number" step="0.1" class="form-control" id="gps-tempo_totale_min"></div><div class="col-md-4 mb-3"><label class="form-label">Distanza Sprint (m)</label><input type="number" step="0.1" class="form-control" id="gps-distanza_sprint_m"></div><div class="col-md-4 mb-3"><label class="form-label">Velocità Massima (km/h)</label><input type="number" step="0.1" class="form-control" id="gps-velocita_massima_kmh"></div></div>
+                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Numero di Sprint</label><input type="number" class="form-control" id="gps-numero_sprint"></div><div class="col-md-4 mb-3"><label class="form-label">Max Acc (g)o(n°)</label><input type="number" step="0.1" class="form-control" id="gps-max_accelerazione"></div><div class="col-md-4 mb-3"><label class="form-label">Max Dec (g)o(n°)</label><input type="number" step="0.1" class="form-control" id="gps-max_decelerazione"></div></div>
+                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Passaggi Piede Sinistro</label><input type="number" class="form-control" id="gps-passaggi_sx"></div><div class="col-md-4 mb-3"><label class="form-label">Passaggi Piede Destro</label><input type="number" class="form-control" id="gps-passaggi_dx"></div><div class="col-md-4 mb-3"><label class="form-label">Cross Piede Sinistro</label><input type="number" class="form-control" id="gps-cross_sx"></div></div>
+                <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Cross Piede Destro</label><input type="number" class="form-control" id="gps-cross_dx"></div><div class="col-md-4 mb-3"><label class="form-label">Potenza Massima di Tiro (km/h)</label><input type="number" step="0.1" class="form-control" id="gps-potenza_tiro_kmh"></div><div class="col-md-4 mb-3"><label class="form-label">Distanza per Minuto (m/min)</label><input type="number" step="0.1" class="form-control" id="gps-distanza_per_minuto" readonly></div></div>
+                <div class="row"><div class="col-md-3 mb-3"><label class="form-label">Tiri Piede SX</label><input type="number" class="form-control" id="gps-tiri_sx"></div><div class="col-md-3 mb-3"><label class="form-label">Tiri Piede DX</label><input type="number" class="form-control" id="gps-tiri_dx"></div><div class="col-md-3 mb-3"><label class="form-label">% Passaggi Brevi</label><input type="number" step="0.1" class="form-control" id="gps-perc_passaggi_brevi"></div><div class="col-md-3 mb-3"><label class="form-label">% Lanci</label><input type="number" step="0.1" class="form-control" id="gps-perc_lanci"></div></div>
                 <hr><h5 class="mb-3">Dati Circuiti</h5>
-                <div class="row align-items-end">
-                    <div class="col-md-3 mb-3"><label class="form-label">Distanza Circuito (m)</label><input type="number" step="1" class="form-control" id="gps-distanza_circuito" placeholder="es. 400"></div>
-                    <div class="col-md-5 mb-3"><label class="form-label">Tempo Circuito</label><div class="input-group"><input type="number" class="form-control" id="gps-tempo_circuito_min" placeholder="Min" min="0"><span class="input-group-text">:</span><input type="number" class="form-control" id="gps-tempo_circuito_sec" placeholder="Sec" min="0" max="59"><span class="input-group-text">.</span><input type="number" class="form-control" id="gps-tempo_circuito_cen" placeholder="Cen" min="0" max="99"></div></div>
-                    <div class="col-md-4 mb-3"><label class="form-label">Velocità (km/h)</label><input type="text" class="form-control" id="gps-velocita_circuito" readonly></div>
-                </div>
-
+                <div class="row align-items-end"><div class="col-md-3 mb-3"><label class="form-label">Distanza Circuito (m)</label><input type="number" step="1" class="form-control" id="gps-distanza_circuito_m"></div><div class="col-md-5 mb-3"><label class="form-label">Tempo Circuito</label><div class="input-group"><input type="number" class="form-control" id="gps-tempo_circuito_min" placeholder="Min" min="0"><span class="input-group-text">:</span><input type="number" class="form-control" id="gps-tempo_circuito_sec" placeholder="Sec" min="0" max="59"><span class="input-group-text">.</span><input type="number" class="form-control" id="gps-tempo_circuito_cen" placeholder="Cen" min="0" max="99"></div></div><div class="col-md-4 mb-3"><label class="form-label">Velocità (km/h)</label><input type="text" class="form-control" id="gps-velocita_circuito" readonly></div></div>
             </form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button><button type="submit" class="btn btn-primary-custom" form="gps-form">Salva Dati GPS</button></div></div></div></div>
         `;
 
@@ -240,89 +253,111 @@
         const athleteModal = new bootstrap.Modal(document.getElementById('athleteModal'));
         const gpsModal = new bootstrap.Modal(document.getElementById('gpsModal'));
 
-        const elements = {
-            athleteGrid: document.getElementById('athlete-grid'),
-            evaluationDatePicker: document.getElementById('evaluation-date-picker'),
-            performanceSelectorsContainer: document.getElementById('performance-selectors-container'),
-            addComparisonBtn: document.getElementById('add-comparison-btn'),
-            evaluationForm: document.getElementById('evaluation-form'),
-            athleteForm: document.getElementById('athlete-form'),
-            gpsForm: document.getElementById('gps-form'),
-            addAthleteBtn: document.getElementById('add-athlete-btn'),
-            comparisonPeriodToggle: document.getElementById('comparison-period-toggle'),
-            attendancePeriodToggle: document.getElementById('attendance-period-toggle'),
-            metricSelector: document.getElementById('performance-metric-selector'),
-            tableContainer: document.getElementById('performance-table-container'),
-            exportButtonsContainer: document.getElementById('export-buttons-container'),
-            trendAthleteSelector: document.getElementById('trend-athlete-selector'),
-            trendMetricSelector: document.getElementById('trend-metric-selector'),
-            hallOfFameContainer: document.getElementById('hall-of-fame-container'),
-            radarAthleteSelector1: document.getElementById('radar-athlete-selector-1'),
-            radarAthleteSelector2: document.getElementById('radar-athlete-selector-2'),
-            multiAthleteMetricSelector: document.getElementById('multi-athlete-metric-selector'),
-            multiAthleteTimeFilter: document.querySelector('#multi-athlete-chart-container .btn-group[role="group"]'),
-            multiAthleteDatepicker: document.getElementById('multi-athlete-datepicker'),
-            multiAthleteDatepickerContainer: document.getElementById('multi-athlete-datepicker-container'),
-            multiAthleteResetBtn: document.getElementById('multi-athlete-reset-btn'),
-            deleteDayDataBtn: document.getElementById('delete-day-data-btn'),
+        // Elements, chart instances, etc. remain the same
+        const elements = { 
+            athleteGrid: document.getElementById('athlete-grid'), 
+            evaluationDatePicker: document.getElementById('evaluation-date-picker'), 
+            performanceSelectorsContainer: document.getElementById('performance-selectors-container'), 
+            addComparisonBtn: document.getElementById('add-comparison-btn'), 
+            evaluationForm: document.getElementById('evaluation-form'), 
+            athleteForm: document.getElementById('athlete-form'), 
+            gpsForm: document.getElementById('gps-form'), 
+            addAthleteBtn: document.getElementById('add-athlete-btn'), 
+            comparisonPeriodToggle: document.getElementById('comparison-period-toggle'), 
+            attendancePeriodToggle: document.getElementById('attendance-period-toggle'), 
+            metricSelector: document.getElementById('performance-metric-selector'), 
+            tableContainer: document.getElementById('performance-table-container'), 
+            exportButtonsContainer: document.getElementById('export-buttons-container'), 
+            trendAthleteSelector: document.getElementById('trend-athlete-selector'), 
+            trendMetricSelector: document.getElementById('trend-metric-selector'), 
+            hallOfFameContainer: document.getElementById('hall-of-fame-container'), 
+            radarAthleteSelector1: document.getElementById('radar-athlete-selector-1'), 
+            radarAthleteSelector2: document.getElementById('radar-athlete-selector-2'), 
+            multiAthleteMetricSelector: document.getElementById('multi-athlete-metric-selector'), 
+            multiAthleteTimeFilter: document.querySelector('#multi-athlete-chart-container .btn-group[role="group"]'), 
+            multiAthleteDatepicker: document.getElementById('multi-athlete-datepicker'), 
+            multiAthleteDatepickerContainer: document.getElementById('multi-athlete-datepicker-container'), 
+            multiAthleteResetBtn: document.getElementById('multi-athlete-reset-btn'), 
+            deleteDayDataBtn: document.getElementById('delete-day-data-btn'), 
+            performanceFilterToggle: document.getElementById('performance-filter-toggle'), 
+            multiAthleteTypeSelector: document.getElementById('multi-athlete-type-selector'),
             exportAllDataBtn: document.getElementById('export-all-data-btn'),
             importFileInput: document.getElementById('import-file-input'),
-            performanceFilterToggle: document.getElementById('performance-filter-toggle'),
-            multiAthleteTypeSelector: document.getElementById('multi-athlete-type-selector'),
         };
-
-        const allGpsFields = ['data_di_registrazione', 'tipo_sessione', 'distanza_totale', 'tempo_totale', 'distanza_sprint', 'velocita_massima', 'numero_di_sprint', 'max_acc', 'max_dec', 'passaggi_piede_sinistro', 'passaggi_piede_destro', 'cross_piede_sinistro', 'cross_piede_destro', 'potenza_massima_di_tiro', 'distanza_per_minuto', 'tiri_piede_sx', 'tiri_piede_dx', 'perc_passaggi_brevi', 'perc_lanci', 'distanza_circuito', 'tempo_circuito_totale_s', 'velocita_circuito'];
-        const gpsFieldsForDisplay = { 'tipo_sessione':'Tipo', 'distanza_totale': 'Dist. Totale (m)', 'tempo_totale': 'Tempo (min)', 'distanza_per_minuto':'Dist/min (m)', 'distanza_sprint': 'Distanza Sprint (m)', 'velocita_massima': 'Vel. Max (km/h)', 'numero_di_sprint': 'Num. Sprint', 'max_acc': 'Max Acc (g)o(n°)', 'max_dec': 'Max Dec (g)o(n°)', 'passaggi_piede_sinistro':'Passaggi SX', 'passaggi_piede_destro':'Passaggi DX', 'cross_piede_sinistro':'Cross SX', 'cross_piede_destro':'Cross DX', 'potenza_massima_di_tiro':'Pot. Tiro (km/h)', 'tiri_piede_sx': 'Tiri Piede SX', 'tiri_piede_dx': 'Tiri Piede DX', 'perc_passaggi_brevi': '% Passaggi Brevi', 'perc_lanci': '% Lanci', 'distanza_circuito': 'Dist. Circuito (m)', 'tempo_circuito_totale_s': 'Tempo Circuito (s)', 'velocita_circuito': 'Vel. Circuito (km/h)' };
-        const radarMetrics = { 'distanza_sprint': 'Distanza Sprint', 'velocita_massima': 'Vel. Max', 'max_acc': 'Max Acc', 'max_dec': 'Max Dec', 'passaggi_piede_sinistro': 'Pass. SX', 'passaggi_piede_destro': 'Pass. DX', 'cross_piede_sinistro': 'Cross SX', 'cross_piede_destro': 'Cross DX', 'potenza_massima_di_tiro': 'Pot. Tiro', 'distanza_per_minuto': 'Dist/min', 'tiri_piede_sx': 'Tiri SX', 'tiri_piede_dx': 'Tiri DX', 'perc_passaggi_brevi': '% Pass. Brevi', 'perc_lanci': '% Lanci', 'velocita_circuito': 'Vel. Circuito' };
-
-        const evaluationCategories = ['presenza-allenamento', 'serieta-allenamento', 'abbigliamento-allenamento', 'abbigliamento-partita', 'comunicazioni', 'doccia'];
+        const gpsFieldsForDisplay = { 'distanza_totale_m': 'Dist. Totale (m)', 'tempo_totale_min': 'Tempo (min)', 'distanza_per_minuto':'Dist/min (m)', 'distanza_sprint_m': 'Distanza Sprint (m)', 'velocita_massima_kmh': 'Vel. Max (km/h)', 'numero_sprint': 'Num. Sprint', 'max_accelerazione': 'Max Acc', 'max_decelerazione': 'Max Dec', 'passaggi_sx':'Passaggi SX', 'passaggi_dx':'Passaggi DX', 'cross_sx':'Cross SX', 'cross_dx':'Cross DX', 'potenza_tiro_kmh':'Pot. Tiro (km/h)', 'tiri_sx': 'Tiri SX', 'tiri_dx': 'Tiri DX', 'perc_passaggi_brevi': '% Passaggi Brevi', 'perc_lanci': '% Lanci', 'distanza_circuito_m': 'Dist. Circuito (m)', 'tempo_circuito_s': 'Tempo Circuito (s)', 'velocita_circuito': 'Vel. Circuito (km/h)' };
+        const radarMetrics = { 'distanza_sprint_m': 'Sprint', 'velocita_massima_kmh': 'Vel. Max', 'max_accelerazione': 'Max Acc', 'max_decelerazione': 'Max Dec', 'passaggi_sx': 'Pass. SX', 'passaggi_dx': 'Pass. DX', 'cross_sx': 'Cross SX', 'cross_dx': 'Cross DX', 'potenza_tiro_kmh': 'Pot. Tiro', 'distanza_per_minuto': 'Dist/min', 'tiri_sx': 'Tiri SX', 'tiri_dx': 'Tiri DX', 'perc_passaggi_brevi': '% Brevi', 'perc_lanci': '% Lanci', 'velocita_circuito': 'Vel. Circuito' };
+        const evaluationCategories = { 'presenza_allenamento': 'presenza-allenamento', 'serieta_allenamento': 'serieta-allenamento', 'abbigliamento_allenamento': 'abbigliamento-allenamento', 'abbigliamento_partita': 'abbigliamento-partita', 'serieta_comunicazioni': 'comunicazioni', 'doccia': 'doccia' };
         const defaultAvatar = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3e%3cpath fill='%231e5095' d='M128 128H0V0h128v128z'/%3e%3cpath fill='%23ffffff' d='M64 100c-19.88 0-36-16.12-36-36s16.12-36 36-36 36 16.12 36 36-16.12 36-36 36zm0-64c-15.46 0-28 12.54-28 28s12.54 28 28 28 28-12.54 28-28-12.54-28-28-28z'/%3e%3cpath fill='%23ffffff' d='M64 24a40.01 40.01 0 00-28.28 11.72C35.8 35.8 28 45.45 28 56h8c0-8.27 5.61-15.64 13.53-18.89A31.93 31.93 0 0164 32a32.09 32.09 0 0124.47 11.11C96.39 40.36 102 47.73 102 56h8c0-10.55-7.8-20.2-17.72-24.28A39.99 39.99 0 0064 24z'/%3e%3c/svg%3e";
 
         let athletes = [], evaluations = {}, gpsData = {}, awards = {};
         let chartInstances = {};
         let comparisonChartPeriod = 'daily';
         let attendanceChartPeriod = 'daily';
-        let performanceSelections = [ { athleteId: null, date: null }, { athleteId: null, date: null } ];
+        let performanceSelections = [ { athleteId: null, sessionId: null }, { athleteId: null, sessionId: null } ];
         let performanceFilterType = 'all';
         let multiAthleteFilterType = 'all';
 
-        const saveData = async () => {
-            const allData = { athletes, evaluations, gpsData, awards };
-            try {
-                await fetch('/api/data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(allData)
-                });
-            } catch (error) {
-                console.error('Errore nel salvataggio dei dati sul server:', error);
-            }
-        };
+        // ========================================================================
+        // DATA MANAGEMENT FUNCTIONS (NOW WITH SUPABASE)
+        // ========================================================================
 
         const loadData = async () => {
+            console.log("Caricamento dati da Supabase...");
             try {
-                const response = await fetch('/api/data', { cache: 'no-store' });
-                if (!response.ok) throw new Error(`Errore HTTP: ${response.status}`);
-                const allData = await response.json();
-                athletes = allData.athletes || [];
-                evaluations = allData.evaluations || {};
-                gpsData = allData.gpsData || {};
-                awards = allData.awards || {};
+                // 1. Fetch Atleti
+                const { data: atletiData, error: atletiError } = await db.from('atleti').select('*');
+                if (atletiError) throw atletiError;
+                athletes = atletiData;
+
+                // 2. Fetch Valutazioni and re-structure
+                const { data: valutazioniData, error: valutazioniError } = await db.from('valutazioni').select('*');
+                if (valutazioniError) throw valutazioniError;
+                evaluations = {};
+                valutazioniData.forEach(v => {
+                    if (!evaluations[v.data_valutazione]) evaluations[v.data_valutazione] = {};
+                    evaluations[v.data_valutazione][v.atleta_id] = v;
+                });
+
+                // 3. Fetch Sessioni GPS and re-structure
+                const { data: sessioniData, error: sessioniError } = await db.from('sessioni_gps').select('*');
+                if (sessioniError) throw sessioniError;
+                gpsData = {};
+                sessioniData.forEach(s => {
+                    if (!gpsData[s.atleta_id]) gpsData[s.atleta_id] = {};
+                    gpsData[s.atleta_id][s.id] = s;
+                });
+
+                // 4. Fetch Premi and re-structure
+                const { data: premiData, error: premiError } = await db.from('premi').select('*');
+                if (premiError) throw premiError;
+                awards = {};
+                premiData.forEach(p => {
+                    if (!awards[p.data_premio]) awards[p.data_premio] = [];
+                    awards[p.data_premio].push(p);
+                });
+
+                console.log("Dati caricati con successo.");
+
             } catch (error) {
-                console.error('Errore nel caricamento dei dati dal server:', error);
+                console.error('Errore nel caricamento dei dati da Supabase:', error);
+                alert(`Errore nel caricamento dati: ${error.message}. Controlla le credenziali e la console.`);
                 athletes = []; evaluations = {}; gpsData = {}; awards = {};
             }
         };
 
-        const calculateAthleteScore = (evaluation) => !evaluation ? 0 : Object.keys(evaluation).filter(k => k !== 'doccia').reduce((sum, key) => sum + parseInt(evaluation[key] || 0, 10), 0);
+        const calculateAthleteScore = (evaluation) => !evaluation ? 0 : Object.keys(evaluation).filter(k => k !== 'doccia' && k !== 'id' && k !== 'created_at' && k !== 'atleta_id' && k !== 'data_valutazione').reduce((sum, key) => sum + parseInt(evaluation[key] || 0, 10), 0);
         const getWeekRange = (date) => { const d = new Date(date); const day = d.getDay(); const diff = d.getDate() - day + (day === 0 ? -6 : 1); const monday = new Date(d.setDate(diff)); const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6); return { start: monday.toISOString().split('T')[0], end: sunday.toISOString().split('T')[0] }; };
+
+        // ========================================================================
+        // UI RENDERING FUNCTIONS (slight modifications for new data structure)
+        // ========================================================================
 
         const renderAthletes = () => {
             elements.athleteGrid.innerHTML = '';
             athletes.forEach(athlete => {
                 const card = document.createElement('div');
                 card.className = 'col-xl-3 col-lg-4 col-md-6 mb-4';
-                card.innerHTML = `<div class="card athlete-card"><div class="card-body athlete-card-clickable" data-athlete-id="${athlete.id}"><img src="${athlete.avatar || defaultAvatar}" onerror="this.src='${defaultAvatar}'" alt="${athlete.name}" class="athlete-avatar me-3"><div><h5 class="card-title mb-0">${athlete.name} ${athlete.isCaptain ? '<i class="bi bi-star-fill is-captain"></i>' : ''}</h5><p class="card-text text-muted">${athlete.role}</p></div><div class="shirt-number">${athlete.number}</div></div><div class="card-actions"><button class="btn btn-sm btn-outline-light gps-btn" title="Dati Performance" data-athlete-id="${athlete.id}"><i class="bi bi-person-fill-gear"></i></button><button class="btn btn-sm btn-outline-light edit-btn" title="Modifica Atleta" data-athlete-id="${athlete.id}"><i class="bi bi-pencil-fill"></i></button><button class="btn btn-sm btn-outline-light delete-btn" title="Elimina Atleta" data-athlete-id="${athlete.id}"><i class="bi bi-trash-fill"></i></button></div></div>`;
+                card.innerHTML = `<div class="card athlete-card"><div class="card-body athlete-card-clickable" data-athlete-id="${athlete.id}"><img src="${athlete.url_foto || defaultAvatar}" onerror="this.src='${defaultAvatar}'" alt="${athlete.nome_cognome}" class="athlete-avatar me-3"><div><h5 class="card-title mb-0">${athlete.nome_cognome} ${athlete.is_capitano ? '<i class="bi bi-star-fill is-captain"></i>' : ''}</h5><p class="card-text text-muted">${athlete.ruolo}</p></div><div class="shirt-number">${athlete.numero_maglia}</div></div><div class="card-actions"><button class="btn btn-sm btn-outline-light gps-btn" title="Dati Performance" data-athlete-id="${athlete.id}"><i class="bi bi-person-fill-gear"></i></button><button class="btn btn-sm btn-outline-light edit-btn" title="Modifica Atleta" data-athlete-id="${athlete.id}"><i class="bi bi-pencil-fill"></i></button><button class="btn btn-sm btn-outline-light delete-btn" title="Elimina Atleta" data-athlete-id="${athlete.id}"><i class="bi bi-trash-fill"></i></button></div></div>`;
                 elements.athleteGrid.appendChild(card);
             });
         };
@@ -339,8 +374,80 @@
             updateAthleteRadarChart();
             updateMultiAthleteChart();
         }
+        
+        const updateHallOfFame = () => {
+            elements.hallOfFameContainer.innerHTML = '';
+            const allAwards = Object.values(awards).flat();
+            if (allAwards.length === 0) { elements.hallOfFameContainer.innerHTML = '<p class="text-muted">Nessun premio assegnato per questa stagione.</p>'; return; }
+            allAwards.forEach(award => {
+                const athlete = athletes.find(a => a.id === award.atleta_id);
+                if (athlete) {
+                    const awardCard = document.createElement('div');
+                    awardCard.className = 'card award-card p-3 text-center';
+                    awardCard.style.minWidth = '200px';
+                    const dateObj = new Date(award.data_premio);
+                    const formattedDate = !isNaN(dateObj) ? dateObj.toLocaleDateString('it-IT') : 'Data non disponibile';
+                    awardCard.innerHTML = `
+                        <img src="${athlete.url_foto || defaultAvatar}" onerror="this.src='${defaultAvatar}'" alt="${athlete.nome_cognome}" class="award-avatar mx-auto mb-2 rounded-circle">
+                        <h6 class="mb-1">${athlete.nome_cognome}</h6>
+                        <p class="mb-0" style="font-size: 0.8rem; color: #000;">${formattedDate}</p>
+                        <small>${award.motivo}</small>
+                        <i class="bi bi-trophy-fill mt-2" style="font-size: 1.5rem;"></i>`;
+                    elements.hallOfFameContainer.appendChild(awardCard);
+                }
+            });
+        };
+        
+        const populatePerformanceSelectors = () => {
+            elements.performanceSelectorsContainer.innerHTML = '';
+            performanceSelections.forEach((selection, index) => {
+                const selectorRow = document.createElement('div');
+                selectorRow.className = 'row g-2 align-items-end mb-2';
+                selectorRow.innerHTML = `<div class="col-md-6"><label class="form-label">Atleta ${index + 1}:</label><select class="form-select athlete-selector" data-index="${index}"><option value="">Seleziona atleta...</option>${athletes.map(a => `<option value="${a.id}" ${selection.athleteId == a.id ? 'selected' : ''}>${a.nome_cognome}</option>`).join('')}</select></div><div class="col-md-5"><label class="form-label">Sessione:</label><select class="form-select session-selector" data-index="${index}"><option value="">Seleziona sessione...</option></select></div><div class="col-md-1"><button class="btn btn-outline-danger btn-sm remove-selector" data-index="${index}" ${performanceSelections.length <= 2 ? 'disabled' : ''}><i class="bi bi-trash"></i></button></div>`;
+                elements.performanceSelectorsContainer.appendChild(selectorRow);
+                const athleteId = selection.athleteId;
+                const sessionSelector = selectorRow.querySelector('.session-selector');
+                if (athleteId && gpsData[athleteId]) {
+                    const allSessions = Object.values(gpsData[athleteId]);
+                    const filteredSessions = (performanceFilterType === 'all') ? allSessions : allSessions.filter(session => session.tipo_sessione === performanceFilterType);
+                    filteredSessions
+                        .sort((a,b) => new Date(b.data_registrazione) - new Date(a.data_registrazione))
+                        .forEach((session) => {
+                            const option = document.createElement('option');
+                            option.value = session.id;
+                            option.textContent = `${new Date(session.data_registrazione).toLocaleDateString('it-IT')} - ${session.tipo_sessione || 'N/A'}`;
+                            if (selection.sessionId === session.id) option.selected = true;
+                            sessionSelector.appendChild(option);
+                        });
+                }
+            });
+            elements.metricSelector.innerHTML = Object.entries(gpsFieldsForDisplay).map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
+            elements.multiAthleteMetricSelector.innerHTML = Object.entries(gpsFieldsForDisplay).map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
+        };
+        
+        const updatePerformanceChart = () => {
+            const selectedMetric = elements.metricSelector.value;
+            if (!selectedMetric) return;
+            const validSelections = performanceSelections.filter(s => s.athleteId && s.sessionId);
+            if (validSelections.length === 0) { if (chartInstances.performance) chartInstances.performance.destroy(); updatePerformanceTable(); return; }
+            const chartData = {
+                labels: validSelections.map((selection) => { const athlete = athletes.find(a => a.id === selection.athleteId); const session = gpsData[selection.athleteId]?.[selection.sessionId]; return `${athlete?.nome_cognome || 'N/A'} (${new Date(session.data_registrazione).toLocaleDateString('it-IT')})`; }),
+                datasets: [{ label: gpsFieldsForDisplay[selectedMetric] || selectedMetric, data: validSelections.map(selection => { const data = gpsData[selection.athleteId]?.[selection.sessionId]; return data ? (data[selectedMetric] || 0) : 0; }), backgroundColor: 'rgba(217, 4, 41, 0.8)' }]
+            };
+            if (chartInstances.performance) chartInstances.performance.destroy();
+            chartInstances.performance = new Chart(document.getElementById('performanceChart').getContext('2d'), { type: 'bar', data: chartData, options: { scales: { y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } }, x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } } }, plugins: { legend: { labels: { color: '#ffffff' } } } } });
+            updatePerformanceTable();
+        };
 
-        const updateEvaluationCharts = () => {
+        const updatePerformanceTable = () => {
+            const validSelections = performanceSelections.filter(s => s.athleteId && s.sessionId);
+            if (validSelections.length === 0) { elements.tableContainer.innerHTML = '<p class="text-muted">Nessun dato da visualizzare</p>'; elements.exportButtonsContainer.innerHTML = ''; return; }
+            elements.tableContainer.innerHTML = `<table class="table table-dark table-striped table-hover"><thead><tr><th>Atleta</th><th>Data</th>${Object.values(gpsFieldsForDisplay).map(label => `<th>${label}</th>`).join('')}</tr></thead><tbody>${validSelections.map(selection => { const athlete = athletes.find(a => a.id === selection.athleteId); const data = gpsData[selection.athleteId]?.[selection.sessionId] || {}; return `<tr><td>${athlete?.nome_cognome || 'N/A'}</td><td>${new Date(data.data_registrazione).toLocaleDateString('it-IT')}</td>${Object.keys(gpsFieldsForDisplay).map(key => `<td>${data[key] ?? 'N/A'}</td>`).join('')}</tr>`; }).join('')}</tbody></table>`;
+            elements.exportButtonsContainer.innerHTML = `<button class="btn btn-success btn-sm" id="export-excel"><i class="bi bi-file-excel"></i> Excel</button><button class="btn btn-danger btn-sm" id="export-pdf"><i class="bi bi-file-pdf"></i> PDF</button>`;
+        };
+        
+        // ... (other chart update functions remain very similar, just need to access data slightly differently)
+         const updateEvaluationCharts = () => {
             const date = elements.evaluationDatePicker.value;
             if (!date) return;
             const last7Days = Array.from({length: 7}, (_, i) => new Date(Date.now() - i * 864e5).toISOString().split('T')[0]).reverse();
@@ -356,11 +463,11 @@
             });
 
             const scores = {};
-            athletes.forEach(a => scores[String(a.id)] = { name: a.name, score: 0 });
+            athletes.forEach(a => scores[a.id] = { name: a.nome_cognome, score: 0 });
 
-            if (comparisonChartPeriod === 'daily') { if(evaluations[date]) { Object.entries(evaluations[date]).forEach(([id, ev]) => { if(scores[id]) scores[id].score += calculateAthleteScore(ev); }); } }
-            else if (comparisonChartPeriod === 'monthly') { const month = date.substring(0, 7); Object.keys(evaluations).filter(d => d.startsWith(month)).forEach(d => { Object.entries(evaluations[d]).forEach(([id, ev]) => { if(scores[id]) scores[id].score += calculateAthleteScore(ev); }); }); }
-            else { const week = getWeekRange(date); Object.keys(evaluations).filter(d => d >= week.start && d <= week.end).forEach(d => { Object.entries(evaluations[d]).forEach(([id, ev]) => { if(scores[id]) scores[id].score += calculateAthleteScore(ev); }); }); }
+            if (comparisonChartPeriod === 'daily') { if(evaluations[date]) { Object.values(evaluations[date]).forEach(ev => { if(scores[ev.atleta_id]) scores[ev.atleta_id].score += calculateAthleteScore(ev); }); } }
+            else if (comparisonChartPeriod === 'monthly') { const month = date.substring(0, 7); Object.keys(evaluations).filter(d => d.startsWith(month)).forEach(d => { Object.values(evaluations[d]).forEach(ev => { if(scores[ev.atleta_id]) scores[ev.atleta_id].score += calculateAthleteScore(ev); }); }); }
+            else { const week = getWeekRange(date); Object.keys(evaluations).filter(d => d >= week.start && d <= week.end).forEach(d => { Object.values(evaluations[d]).forEach(ev => { if(scores[ev.atleta_id]) scores[ev.atleta_id].score += calculateAthleteScore(ev); }); }); }
 
             const allSortedScores = Object.values(scores).filter(a => a.score > 0).sort((a, b) => b.score - a.score);
             let scoresToShow = allSortedScores;
@@ -372,35 +479,23 @@
             const canvas = document.getElementById('monthlyComparisonChart');
             if(chartInstances.monthlyComparison) chartInstances.monthlyComparison.destroy();
             chartInstances.monthlyComparison = new Chart(canvas.getContext('2d'), {
-                type: 'bar', 
-                data: {
-                    labels: scoresToShow.map(a=>a.name), 
-                    datasets: [{ label: 'Punteggio Totale', data: scoresToShow.map(a=>a.score), backgroundColor: 'rgba(217, 4, 41, 0.8)' }]
-                }, 
-                options: {
-                    indexAxis: 'y', 
-                    scales: {
-                        y: { ticks: { color: '#ffffff', font: { size: 9 }, autoSkip: false }, grid: { color: 'rgba(241, 241, 241, 0.2)' } },
-                        x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } }
-                    },
-                    plugins: { legend: { labels: { color: '#ffffff' } } }
-                }
+                type: 'bar', data: { labels: scoresToShow.map(a=>a.name), datasets: [{ label: 'Punteggio Totale', data: scoresToShow.map(a=>a.score), backgroundColor: 'rgba(217, 4, 41, 0.8)' }] }, 
+                options: { indexAxis: 'y', scales: { y: { ticks: { color: '#ffffff', font: { size: 9 }, autoSkip: false }, grid: { color: 'rgba(241, 241, 241, 0.2)' } }, x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } } }, plugins: { legend: { labels: { color: '#ffffff' } } } }
             });
         };
-
         const updateAttendanceChart = () => {
             const date = elements.evaluationDatePicker.value;
             if (!date) return;
             const attendanceData = {};
-            athletes.forEach(a => attendanceData[String(a.id)] = { name: a.name, count: 0 });
+            athletes.forEach(a => attendanceData[a.id] = { name: a.nome_cognome, count: 0 });
             if (attendanceChartPeriod === 'daily') {
-                if (evaluations[date]) { Object.entries(evaluations[date]).forEach(([id, ev]) => { if (attendanceData[id] && ev['presenza-allenamento'] && parseInt(ev['presenza-allenamento'], 10) > 0) { attendanceData[id].count = 1; } }); }
+                if (evaluations[date]) { Object.values(evaluations[date]).forEach(ev => { if (attendanceData[ev.atleta_id] && ev['presenza_allenamento'] > 0) { attendanceData[ev.atleta_id].count = 1; } }); }
             } else if (attendanceChartPeriod === 'monthly') {
                 const month = date.substring(0, 7);
-                Object.keys(evaluations).filter(d => d.startsWith(month)).forEach(d => { Object.entries(evaluations[d]).forEach(([id, ev]) => { if (attendanceData[id] && ev['presenza-allenamento'] && parseInt(ev['presenza-allenamento'], 10) > 0) { attendanceData[id].count++; } }); });
+                Object.keys(evaluations).filter(d => d.startsWith(month)).forEach(d => { Object.values(evaluations[d]).forEach(ev => { if (attendanceData[ev.atleta_id] && ev['presenza_allenamento'] > 0) { attendanceData[ev.atleta_id].count++; } }); });
             } else {
                 const week = getWeekRange(date);
-                Object.keys(evaluations).filter(d => d >= week.start && d <= week.end).forEach(d => { Object.entries(evaluations[d]).forEach(([id, ev]) => { if (attendanceData[id] && ev['presenza-allenamento'] && parseInt(ev['presenza-allenamento'], 10) > 0) { attendanceData[id].count++; } }); });
+                Object.keys(evaluations).filter(d => d >= week.start && d <= week.end).forEach(d => { Object.values(evaluations[d]).forEach(ev => { if (attendanceData[ev.atleta_id] && ev['presenza_allenamento'] > 0) { attendanceData[ev.atleta_id].count++; } }); });
             }
             const sortedAttendance = Object.values(attendanceData).sort((a, b) => b.count - a.count);
             if(chartInstances.attendance) chartInstances.attendance.destroy();
@@ -410,112 +505,31 @@
                 options: { scales: { y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } }, x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } } }, plugins: { legend: { labels: { color: '#ffffff' } } } }
             });
         };
-
-        const updateHallOfFame = () => {
-            elements.hallOfFameContainer.innerHTML = '';
-            const allAwards = Object.values(awards).flat();
-            if (allAwards.length === 0) { elements.hallOfFameContainer.innerHTML = '<p class="text-muted">Nessun premio assegnato per questa stagione.</p>'; return; }
-            allAwards.forEach(award => {
-                const athlete = athletes.find(a => a.id.toString() === award.athleteId.toString());
-                if (athlete) {
-                    const awardCard = document.createElement('div');
-                    awardCard.className = 'card award-card p-3 text-center';
-                    awardCard.style.minWidth = '200px';
-
-                    const dateObj = new Date(award.date);
-                    const formattedDate = !isNaN(dateObj) ? dateObj.toLocaleDateString('it-IT') : 'Data non disponibile';
-
-                    awardCard.innerHTML = `
-                        <img src="${athlete.avatar || defaultAvatar}" onerror="this.src='${defaultAvatar}'" alt="${athlete.name}" class="award-avatar mx-auto mb-2 rounded-circle">
-                        <h6 class="mb-1">${athlete.name}</h6>
-                        <p class="mb-0" style="font-size: 0.8rem; color: #000;">${formattedDate}</p>
-                        <small>${award.reason}</small>
-                        <i class="bi bi-trophy-fill mt-2" style="font-size: 1.5rem;"></i>
-                    `;
-                    elements.hallOfFameContainer.appendChild(awardCard);
-                }
-            });
-        };
-
-        const populatePerformanceSelectors = () => {
-            elements.performanceSelectorsContainer.innerHTML = '';
-            performanceSelections.forEach((selection, index) => {
-                const selectorRow = document.createElement('div');
-                selectorRow.className = 'row g-2 align-items-end mb-2';
-                selectorRow.innerHTML = `<div class="col-md-6"><label class="form-label">Atleta ${index + 1}:</label><select class="form-select athlete-selector" data-index="${index}"><option value="">Seleziona atleta...</option>${athletes.map(a => `<option value="${a.id}" ${selection.athleteId == a.id ? 'selected' : ''}>${a.name}</option>`).join('')}</select></div><div class="col-md-5"><label class="form-label">Sessione:</label><select class="form-select date-selector" data-index="${index}"><option value="">Seleziona sessione...</option></select></div><div class="col-md-1"><button class="btn btn-outline-danger btn-sm remove-selector" data-index="${index}" ${performanceSelections.length <= 2 ? 'disabled' : ''}><i class="bi bi-trash"></i></button></div>`;
-                elements.performanceSelectorsContainer.appendChild(selectorRow);
-                const athleteId = selection.athleteId;
-                const dateSelector = selectorRow.querySelector('.date-selector');
-                if (athleteId && gpsData[athleteId]) {
-                    const allSessions = Object.entries(gpsData[athleteId]);
-                    const filteredSessions = (performanceFilterType === 'all')
-                        ? allSessions
-                        : allSessions.filter(([, session]) => session.tipo_sessione === performanceFilterType);
-
-                    filteredSessions
-                        .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
-                        .forEach(([date, session]) => {
-                            const option = document.createElement('option');
-                            option.value = date;
-                            option.textContent = `${new Date(date).toLocaleDateString('it-IT')} - ${session.tipo_sessione || 'N/A'}`;
-                            if (selection.date === date) option.selected = true;
-                            dateSelector.appendChild(option);
-                        });
-                }
-            });
-            elements.metricSelector.innerHTML = Object.entries(gpsFieldsForDisplay).filter(([key]) => key !== 'tipo_sessione').map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
-            elements.multiAthleteMetricSelector.innerHTML = Object.entries(gpsFieldsForDisplay).filter(([key]) => key !== 'tipo_sessione').map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
-        };
-
-        const updatePerformanceChart = () => {
-            const selectedMetric = elements.metricSelector.value;
-            if (!selectedMetric) return;
-            const validSelections = performanceSelections.filter(s => s.athleteId && s.date);
-            if (validSelections.length === 0) { if (chartInstances.performance) chartInstances.performance.destroy(); updatePerformanceTable(); return; }
-            const chartData = {
-                labels: validSelections.map((selection) => { const athlete = athletes.find(a => a.id.toString() === selection.athleteId.toString()); return `${athlete?.name || 'N/A'} (${new Date(selection.date).toLocaleDateString('it-IT')})`; }),
-                datasets: [{ label: gpsFieldsForDisplay[selectedMetric] || selectedMetric, data: validSelections.map(selection => { const data = gpsData[selection.athleteId]?.[selection.date]; return data ? (data[selectedMetric] || 0) : 0; }), backgroundColor: 'rgba(217, 4, 41, 0.8)' }]
-            };
-            if (chartInstances.performance) chartInstances.performance.destroy();
-            chartInstances.performance = new Chart(document.getElementById('performanceChart').getContext('2d'), { type: 'bar', data: chartData, options: { scales: { y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } }, x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } } }, plugins: { legend: { labels: { color: '#ffffff' } } } } });
-            updatePerformanceTable();
-        };
-
-        const updatePerformanceTable = () => {
-            const validSelections = performanceSelections.filter(s => s.athleteId && s.date);
-            if (validSelections.length === 0) { elements.tableContainer.innerHTML = '<p class="text-muted">Nessun dato da visualizzare</p>'; elements.exportButtonsContainer.innerHTML = ''; return; }
-            elements.tableContainer.innerHTML = `<table class="table table-dark table-striped table-hover"><thead><tr><th>Atleta</th><th>Data</th>${Object.values(gpsFieldsForDisplay).map(label => `<th>${label}</th>`).join('')}</tr></thead><tbody>${validSelections.map(selection => { const athlete = athletes.find(a => a.id.toString() === selection.athleteId.toString()); const data = gpsData[selection.athleteId]?.[selection.date] || {}; return `<tr><td>${athlete?.name || 'N/A'}</td><td>${new Date(selection.date).toLocaleDateString('it-IT')}</td>${Object.keys(gpsFieldsForDisplay).map(key => `<td>${data[key] ?? 'N/A'}</td>`).join('')}</tr>`; }).join('')}</tbody></table>`;
-            elements.exportButtonsContainer.innerHTML = `<button class="btn btn-success btn-sm" id="export-excel"><i class="bi bi-file-excel"></i> Excel</button><button class="btn btn-danger btn-sm" id="export-pdf"><i class="bi bi-file-pdf"></i> PDF</button>`;
-        };
-
         const populateAnalysisSelectors = () => {
-            const athleteOptions = athletes.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+            const athleteOptions = athletes.map(a => `<option value="${a.id}">${a.nome_cognome}</option>`).join('');
             elements.trendAthleteSelector.innerHTML = `<option value="">Seleziona atleta...</option>${athleteOptions}`;
             elements.radarAthleteSelector1.innerHTML = `<option value="">Seleziona atleta...</option>${athleteOptions}`;
             elements.radarAthleteSelector2.innerHTML = `<option value="">Nessun confronto</option>${athleteOptions}`;
-            elements.trendMetricSelector.innerHTML = Object.entries(gpsFieldsForDisplay).filter(([key]) => key !== 'tipo_sessione').map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
+            elements.trendMetricSelector.innerHTML = Object.entries(gpsFieldsForDisplay).map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
         };
-
         const updateAthleteTrendChart = () => {
             const athleteId = elements.trendAthleteSelector.value;
             const metric = elements.trendMetricSelector.value;
             if (!athleteId || !metric) { if(chartInstances.athleteTrend) chartInstances.athleteTrend.destroy(); return; }
-            const athlete = athletes.find(a => a.id.toString() === athleteId);
-            const athleteData = gpsData[athleteId] || {};
-            const dates = Object.keys(athleteData).sort();
-            const values = dates.map(date => athleteData[date][metric] || 0);
+            const athlete = athletes.find(a => a.id === athleteId);
+            const athleteData = Object.values(gpsData[athleteId] || {});
+            const sortedData = athleteData.sort((a,b) => new Date(a.data_registrazione) - new Date(b.data_registrazione));
+            const dates = sortedData.map(s => s.data_registrazione);
+            const values = sortedData.map(s => s[metric] || 0);
             if (chartInstances.athleteTrend) chartInstances.athleteTrend.destroy();
-            chartInstances.athleteTrend = new Chart(document.getElementById('athleteTrendChart').getContext('2d'), { type: 'line', data: { labels: dates.map(d => new Date(d).toLocaleDateString('it-IT')), datasets: [{ label: gpsFieldsForDisplay[metric], data: values, borderColor: 'rgba(217, 4, 41, 1)', backgroundColor: 'rgba(217, 4, 41, 0.2)', tension: 0.3, fill: true }] }, options: { scales: { y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } }, x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } } }, plugins: { legend: { labels: { color: '#ffffff' } }, title: { display: true, text: `Andamento: ${athlete?.name || 'N/A'}`, color: '#ffffff' } } } });
+            chartInstances.athleteTrend = new Chart(document.getElementById('athleteTrendChart').getContext('2d'), { type: 'line', data: { labels: dates.map(d => new Date(d).toLocaleDateString('it-IT')), datasets: [{ label: gpsFieldsForDisplay[metric], data: values, borderColor: 'rgba(217, 4, 41, 1)', backgroundColor: 'rgba(217, 4, 41, 0.2)', tension: 0.3, fill: true }] }, options: { scales: { y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } }, x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } } }, plugins: { legend: { labels: { color: '#ffffff' } }, title: { display: true, text: `Andamento: ${athlete?.nome_cognome || 'N/A'}`, color: '#ffffff' } } } });
         };
-
         const updateAthleteRadarChart = () => {
             const athleteId1 = elements.radarAthleteSelector1.value;
             const athleteId2 = elements.radarAthleteSelector2.value;
             const selectedAthleteIds = [athleteId1, athleteId2].filter(id => id);
-
             if (chartInstances.athleteRadar) chartInstances.athleteRadar.destroy();
             if (selectedAthleteIds.length === 0) return;
-
             const radarColors = [ 'rgba(217, 4, 41, 1)', 'rgba(255, 215, 0, 1)' ];
             const teamMaxs = {};
             Object.keys(radarMetrics).forEach(metric => {
@@ -523,36 +537,27 @@
                 Object.values(gpsData).forEach(playerData => { Object.values(playerData).forEach(session => { const value = parseFloat(session[metric] || 0); if (value > maxValue) maxValue = value; }); });
                 teamMaxs[metric] = maxValue;
             });
-
             const datasets = selectedAthleteIds.map((athleteId, index) => {
-                const athlete = athletes.find(a => a.id.toString() === athleteId);
-                const athleteData = gpsData[athleteId] || {};
+                const athlete = athletes.find(a => a.id === athleteId);
+                const athleteData = Object.values(gpsData[athleteId] || {});
                 const athleteAvgs = {};
                 Object.keys(radarMetrics).forEach(metric => {
                     let athleteSum = 0, athleteCount = 0;
-                    Object.values(athleteData).forEach(session => { if(session[metric] !== undefined){const value = parseFloat(session[metric] || 0); athleteSum += value; athleteCount++;} });
+                    athleteData.forEach(session => { if(session[metric] !== undefined){const value = parseFloat(session[metric] || 0); athleteSum += value; athleteCount++;} });
                     athleteAvgs[metric] = athleteCount > 0 ? athleteSum / athleteCount : 0;
                 });
                 const normalizedData = Object.keys(radarMetrics).map(metric => teamMaxs[metric] > 0 ? (athleteAvgs[metric] / teamMaxs[metric]) * 100 : 0);
                 const color = radarColors[index % radarColors.length];
-                return {
-                    label: athlete?.name || 'N/A', data: normalizedData, borderColor: color,
-                    backgroundColor: color.replace('1)', '0.2)'), pointBackgroundColor: color, pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff', pointHoverBorderColor: color
-                };
+                return { label: athlete?.nome_cognome || 'N/A', data: normalizedData, borderColor: color, backgroundColor: color.replace('1)', '0.2)'), pointBackgroundColor: color, pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: color };
             });
-
             chartInstances.athleteRadar = new Chart(document.getElementById('athleteRadarChart').getContext('2d'), { type: 'radar', data: { labels: Object.values(radarMetrics), datasets: datasets }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: '#ffffff', backdropColor: 'rgba(0,0,0,0.5)' }, pointLabels: { color: '#ffffff', font: {size: 10} }, grid: { color: 'rgba(241, 241, 241, 0.2)' }, angleLines: { color: 'rgba(241, 241, 241, 0.2)' } } }, plugins: { legend: { labels: { color: '#ffffff' } } } } });
         };
-
         const updateMultiAthleteChart = () => {
             const metric = elements.multiAthleteMetricSelector.value;
             const periodBtn = document.querySelector('#multi-athlete-chart-container .btn-group[role="group"] .btn.active');
             if (!metric || !periodBtn) return;
-
             const period = periodBtn.dataset.period;
             let startDate, endDate = new Date();
-
             if (period === 'day') {
                 if (!elements.multiAthleteDatepicker.value) return;
                 startDate = new Date(elements.multiAthleteDatepicker.value);
@@ -564,234 +569,183 @@
                 startDate.setMonth(startDate.getMonth() - monthsToSubtract[period]);
             }
             startDate.setHours(0, 0, 0, 0);
-
             const chartData = [];
             athletes.forEach(athlete => {
-                const athleteGpsData = gpsData[athlete.id] || {};
-                const relevantSessions = Object.entries(athleteGpsData)
-                    .filter(([date]) => new Date(date) >= startDate && new Date(date) <= endDate)
-                    .filter(([, session]) => {
-                        if (multiAthleteFilterType === 'all') return true;
-                        return session.tipo_sessione === multiAthleteFilterType;
-                    })
-                    .filter(([, session]) => session[metric] !== undefined && session[metric] !== null && String(session[metric]).trim() !== '')
-                    .map(([, session]) => parseFloat(session[metric]));
-
+                const athleteGpsData = Object.values(gpsData[athlete.id] || {});
+                const relevantSessions = athleteGpsData
+                    .filter(session => new Date(session.data_registrazione) >= startDate && new Date(session.data_registrazione) <= endDate)
+                    .filter(session => (multiAthleteFilterType === 'all') ? true : session.tipo_sessione === multiAthleteFilterType)
+                    .filter(session => session[metric] !== undefined && session[metric] !== null && String(session[metric]).trim() !== '')
+                    .map(session => parseFloat(session[metric]));
                 if (relevantSessions.length > 0) {
                     const avgValue = relevantSessions.reduce((a, b) => a + b, 0) / relevantSessions.length;
-                    chartData.push({ name: athlete.name, value: avgValue });
+                    chartData.push({ name: athlete.nome_cognome, value: avgValue });
                 }
             });
-
             chartData.sort((a, b) => b.value - a.value);
-
             if(chartInstances.multiAthlete) chartInstances.multiAthlete.destroy();
             chartInstances.multiAthlete = new Chart(document.getElementById('multiAthleteChart').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: chartData.map(d => d.name),
-                    datasets: [{
-                        label: gpsFieldsForDisplay[metric],
-                        data: chartData.map(d => d.value.toFixed(2)),
-                        backgroundColor: 'rgba(217, 4, 41, 0.8)'
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } },
-                        x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.1)' } }
-                    },
-                    plugins: { legend: { display: false }, tooltip: {
-                        callbacks: {
-                            label: (context) => `${context.dataset.label}: ${context.parsed.y}`
-                        }
-                    }}
-                }
+                type: 'bar', data: { labels: chartData.map(d => d.name), datasets: [{ label: gpsFieldsForDisplay[metric], data: chartData.map(d => d.value.toFixed(2)), backgroundColor: 'rgba(217, 4, 41, 0.8)' }] },
+                options: { scales: { y: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.2)' } }, x: { ticks: { color: '#ffffff' }, grid: { color: 'rgba(241, 241, 241, 0.1)' } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${context.parsed.y}` } } } }
             });
         };
 
-        elements.evaluationDatePicker.addEventListener('change', () => { updateEvaluationCharts(); updateAttendanceChart(); updateHallOfFame(); });
-        elements.comparisonPeriodToggle.addEventListener('click', (e) => { if (e.target.dataset.period) { elements.comparisonPeriodToggle.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); comparisonChartPeriod = e.target.dataset.period; updateEvaluationCharts(); } });
-        elements.attendancePeriodToggle.addEventListener('click', (e) => { if (e.target.dataset.period) { elements.attendancePeriodToggle.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); attendanceChartPeriod = e.target.dataset.period; updateAttendanceChart(); } });
-        elements.addAthleteBtn.addEventListener('click', () => { document.getElementById('athleteModalLabel').textContent = 'Aggiungi Atleta'; document.getElementById('athlete-form').reset(); document.getElementById('modal-athlete-id').value = ''; athleteModal.show(); });
+        // ========================================================================
+        // EVENT LISTENERS (modified for Supabase async operations)
+        // ========================================================================
+
+        elements.addAthleteBtn.addEventListener('click', () => { 
+            document.getElementById('athleteModalLabel').textContent = 'Aggiungi Atleta'; 
+            document.getElementById('athlete-form').reset(); 
+            document.getElementById('modal-athlete-id').value = ''; 
+            athleteModal.show(); 
+        });
 
         elements.athleteGrid.addEventListener('click', (e) => {
             const card = e.target.closest('[data-athlete-id]');
             if (!card) return;
             const athleteId = card.dataset.athleteId;
-            const athlete = athletes.find(a => a.id.toString() === athleteId);
+            const athlete = athletes.find(a => a.id === athleteId);
             if (!athlete) return;
-
             if (e.target.closest('.edit-btn')) {
                 document.getElementById('athleteModalLabel').textContent = 'Modifica Atleta';
                 document.getElementById('modal-athlete-id').value = athlete.id;
-                document.getElementById('athlete-name').value = athlete.name;
-                document.getElementById('athlete-avatar').value = athlete.avatar || '';
-                document.getElementById('athlete-role').value = athlete.role;
-                document.getElementById('athlete-number').value = athlete.number;
-                document.getElementById('athlete-captain').checked = athlete.isCaptain;
+                document.getElementById('athlete-nome_cognome').value = athlete.nome_cognome;
+                document.getElementById('athlete-url_foto').value = athlete.url_foto || '';
+                document.getElementById('athlete-ruolo').value = athlete.ruolo;
+                document.getElementById('athlete-numero_maglia').value = athlete.numero_maglia;
+                document.getElementById('athlete-is_capitano').checked = athlete.is_capitano;
                 athleteModal.show();
             } else if (e.target.closest('.delete-btn')) {
-                if (confirm(`Sei sicuro di voler eliminare ${athlete.name}? Tutti i suoi dati storici verranno rimossi.`)) {
-                    athletes = athletes.filter(a => a.id.toString() !== athleteId);
-                    for (const date in evaluations) { delete evaluations[date][athleteId]; }
-                    delete gpsData[athleteId];
-                    for (const date in awards) { awards[date] = awards[date].filter(a => a.athleteId.toString() !== athleteId); }
-                    saveData().then(updateAllUI);
+                if (confirm(`Sei sicuro di voler eliminare ${athlete.nome_cognome}? Tutti i suoi dati storici verranno rimossi.`)) {
+                    db.from('atleti').delete().eq('id', athleteId).then(({ error }) => {
+                        if (error) alert(`Errore: ${error.message}`);
+                    });
                 }
             } else if (e.target.closest('.gps-btn')) {
-                document.getElementById('modal-athlete-name-gps').textContent = athlete.name;
+                document.getElementById('modal-athlete-name-gps').textContent = athlete.nome_cognome;
                 const gpsForm = document.getElementById('gps-form');
                 gpsForm.reset();
                 gpsForm.querySelector('#modal-athlete-id-gps').value = athlete.id;
-                gpsForm.querySelector('#gps-data_di_registrazione').valueAsDate = new Date();
-
+                gpsForm.querySelector('#gps-data_registrazione').valueAsDate = new Date();
                 const sessionSelector = document.getElementById('gps-session-selector');
                 sessionSelector.innerHTML = '<option value="">--- Inserisci Nuova Sessione ---</option>';
-                const athleteGpsData = gpsData[athlete.id] || {};
-                const sortedDates = Object.keys(athleteGpsData).sort().reverse();
-                sortedDates.forEach(date => {
-                    const session = athleteGpsData[date];
+                const athleteGpsData = Object.values(gpsData[athlete.id] || {}).sort((a,b) => new Date(b.data_registrazione) - new Date(a.data_registrazione));
+                athleteGpsData.forEach(session => {
                     const option = document.createElement('option');
-                    option.value = date;
-                    option.textContent = `${new Date(date).toLocaleDateString('it-IT')} - ${session.tipo_sessione || 'N/A'}`;
+                    option.value = session.id;
+                    option.textContent = `${new Date(session.data_registrazione).toLocaleDateString('it-IT')} - ${session.tipo_sessione || 'N/A'}`;
                     sessionSelector.appendChild(option);
                 });
                 document.getElementById('delete-gps-session-btn').disabled = true;
-
                 gpsModal.show();
             } else if (e.target.closest('.athlete-card-clickable')) {
                 const date = elements.evaluationDatePicker.value;
                 if (date) {
-                    document.getElementById('modal-athlete-name-eval').textContent = athlete.name;
+                    document.getElementById('modal-athlete-name-eval').textContent = athlete.nome_cognome;
                     document.getElementById('modal-athlete-id-eval').value = athlete.id;
                     document.getElementById('modal-evaluation-date').textContent = new Date(date).toLocaleDateString('it-IT');
                     const existingEvaluation = evaluations[date]?.[athleteId] || {};
-                    evaluationCategories.forEach(category => { document.getElementById(category).value = existingEvaluation[category] || '0'; });
-                    document.getElementById('award-checkbox').checked = !!(awards[date]?.find(a => a.athleteId.toString() === athleteId));
+                    Object.entries(evaluationCategories).forEach(([dbKey, htmlId]) => {
+                         document.getElementById(htmlId).value = existingEvaluation[dbKey] || '0';
+                    });
+                    document.getElementById('award-checkbox').checked = !!(awards[date]?.find(a => a.atleta_id === athleteId));
                     evaluationModal.show();
                 }
             }
         });
 
-        elements.athleteForm.addEventListener('submit', (e) => {
+        elements.athleteForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const athleteId = document.getElementById('modal-athlete-id').value;
-            const athleteData = { name: document.getElementById('athlete-name').value.trim(), avatar: document.getElementById('athlete-avatar').value.trim(), role: document.getElementById('athlete-role').value.trim(), number: parseInt(document.getElementById('athlete-number').value), isCaptain: document.getElementById('athlete-captain').checked };
-            if (athleteId) { const index = athletes.findIndex(a => a.id.toString() === athleteId); if (index !== -1) athletes[index] = { ...athletes[index], ...athleteData }; } 
-            else { athleteData.id = Date.now(); athletes.push(athleteData); }
-            saveData().then(updateAllUI);
-            athleteModal.hide();
+            const athleteData = {
+                nome_cognome: document.getElementById('athlete-nome_cognome').value.trim(),
+                url_foto: document.getElementById('athlete-url_foto').value.trim(),
+                ruolo: document.getElementById('athlete-ruolo').value.trim(),
+                numero_maglia: parseInt(document.getElementById('athlete-numero_maglia').value),
+                is_capitano: document.getElementById('athlete-is_capitano').checked
+            };
+            let query;
+            if (athleteId) {
+                query = db.from('atleti').update(athleteData).eq('id', athleteId);
+            } else {
+                query = db.from('atleti').insert([athleteData]);
+            }
+            const { error } = await query;
+            if (error) alert(`Errore: ${error.message}`);
+            else athleteModal.hide();
         });
 
-        elements.evaluationForm.addEventListener('submit', (e) => {
+        elements.evaluationForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const athleteId = document.getElementById('modal-athlete-id-eval').value;
             const date = elements.evaluationDatePicker.value;
-            if (!date) { alert('Per favore, seleziona una data valida prima di salvare.'); return; }
-            if (!evaluations[date]) evaluations[date] = {};
-            evaluations[date][athleteId] = evaluationCategories.reduce((obj, cat) => ({ ...obj, [cat]: document.getElementById(cat).value }), {});
-            if (document.getElementById('award-checkbox').checked) { const reason = prompt('Motivo del premio:'); if (reason) { if (!awards[date]) awards[date] = []; awards[date] = awards[date].filter(a => a.athleteId.toString() !== athleteId); awards[date].push({ athleteId, reason, date }); } } 
-            else { if (awards[date]) awards[date] = awards[date].filter(a => a.athleteId.toString() !== athleteId); }
-            saveData().then(updateAllUI);
+            if (!date) { alert('Per favore, seleziona una data valida.'); return; }
+            
+            const evaluationData = {
+                atleta_id: athleteId,
+                data_valutazione: date
+            };
+            Object.entries(evaluationCategories).forEach(([dbKey, htmlId]) => {
+                evaluationData[dbKey] = document.getElementById(htmlId).value;
+            });
+
+            const { error: evalError } = await db.from('valutazioni').upsert(evaluationData, { onConflict: 'atleta_id, data_valutazione' });
+            if(evalError) { alert(`Errore salvataggio valutazione: ${evalError.message}`); return; }
+
+            // Handle award
+            const awardExists = awards[date]?.find(a => a.atleta_id === athleteId);
+            if (document.getElementById('award-checkbox').checked && !awardExists) {
+                const reason = prompt('Motivo del premio:');
+                if (reason) {
+                    await db.from('premi').insert([{ atleta_id: athleteId, data_premio: date, motivo: reason }]);
+                }
+            } else if (!document.getElementById('award-checkbox').checked && awardExists) {
+                 await db.from('premi').delete().match({ atleta_id: athleteId, data_premio: date });
+            }
             evaluationModal.hide();
         });
 
-        elements.gpsForm.addEventListener('submit', (e) => {
+        elements.gpsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const athleteId = document.getElementById('modal-athlete-id-gps').value;
-            const date = document.getElementById('gps-data_di_registrazione').value;
-            if (!date) {
-                alert("Per favore, inserisci una data di registrazione valida.");
-                return;
-            }
-            const gpsFormData = {};
+            const sessionId = document.getElementById('modal-session-id-gps').value;
+            const date = document.getElementById('gps-data_registrazione').value;
+            if (!date) { alert("Inserisci una data valida."); return; }
 
-            allGpsFields.forEach(field => {
+            const gpsFormData = { atleta_id: athleteId };
+            const allGpsDbFields = [ 'data_registrazione', 'tipo_sessione', 'distanza_totale_m', 'tempo_totale_min', 'distanza_sprint_m', 'velocita_massima_kmh', 'numero_sprint', 'max_accelerazione', 'max_decelerazione', 'passaggi_sx', 'passaggi_dx', 'cross_sx', 'cross_dx', 'potenza_tiro_kmh', 'tiri_sx', 'tiri_dx', 'perc_passaggi_brevi', 'perc_lanci', 'distanza_circuito_m' ];
+            allGpsDbFields.forEach(field => {
                 const el = document.getElementById(`gps-${field}`);
-                if(el) {
-                    const value = el.value.trim();
-                    if(value !== '') gpsFormData[field] = el.type === 'number' ? parseFloat(value) : value;
-                }
+                if (el && el.value.trim() !== '') gpsFormData[field] = el.type === 'number' ? parseFloat(el.value) : el.value;
             });
-
-            const dist = parseFloat(document.getElementById('gps-distanza_totale').value) || 0;
-            const time = parseFloat(document.getElementById('gps-tempo_totale').value) || 0;
+            
+            const dist = gpsFormData.distanza_totale_m || 0;
+            const time = gpsFormData.tempo_totale_min || 0;
             if (dist > 0 && time > 0) gpsFormData.distanza_per_minuto = parseFloat((dist / time).toFixed(2));
 
-            const distC = parseFloat(document.getElementById('gps-distanza_circuito').value) || 0;
             const minC = parseInt(document.getElementById('gps-tempo_circuito_min').value) || 0;
             const secC = parseInt(document.getElementById('gps-tempo_circuito_sec').value) || 0;
             const cenC = parseInt(document.getElementById('gps-tempo_circuito_cen').value) || 0;
             const totalTimeSecC = minC * 60 + secC + cenC / 100;
+            if (totalTimeSecC > 0) gpsFormData.tempo_circuito_s = totalTimeSecC;
 
-            if (totalTimeSecC > 0) {
-                gpsFormData.tempo_circuito_totale_s = totalTimeSecC;
-                if (distC > 0) gpsFormData.velocita_circuito = parseFloat(((distC / totalTimeSecC) * 3.6).toFixed(2));
+            const distC = gpsFormData.distanza_circuito_m || 0;
+            if (distC > 0 && totalTimeSecC > 0) gpsFormData.velocita_circuito = parseFloat(((distC / totalTimeSecC) * 3.6).toFixed(2));
+
+
+            let query;
+            if (sessionId) { // Existing session
+                query = db.from('sessioni_gps').update(gpsFormData).eq('id', sessionId);
+            } else { // New session
+                query = db.from('sessioni_gps').insert([gpsFormData]);
             }
-
-            if (!gpsData[athleteId]) gpsData[athleteId] = {};
-            gpsData[athleteId][date] = gpsFormData;
-            saveData().then(updateAllUI);
-            gpsModal.hide();
+            const { error } = await query;
+            if(error) alert(`Errore salvataggio dati GPS: ${error.message}`);
+            else gpsModal.hide();
         });
-
-        ['gps-distanza_totale', 'gps-tempo_totale'].forEach(id => {
-            document.getElementById(id)?.addEventListener('input', () => {
-                const dist = parseFloat(document.getElementById('gps-distanza_totale').value) || 0;
-                const time = parseFloat(document.getElementById('gps-tempo_totale').value) || 0;
-                document.getElementById('gps-distanza_per_minuto').value = (time > 0) ? (dist / time).toFixed(2) : '';
-            });
-        });
-        ['gps-distanza_circuito', 'gps-tempo_circuito_min', 'gps-tempo_circuito_sec', 'gps-tempo_circuito_cen'].forEach(id => {
-            document.getElementById(id)?.addEventListener('input', () => {
-                const dist = parseFloat(document.getElementById('gps-distanza_circuito').value) || 0;
-                const min = parseInt(document.getElementById('gps-tempo_circuito_min').value) || 0;
-                const sec = parseInt(document.getElementById('gps-tempo_circuito_sec').value) || 0;
-                const cen = parseInt(document.getElementById('gps-tempo_circuito_cen').value) || 0;
-                const totalTimeSec = min * 60 + sec + cen / 100;
-                document.getElementById('gps-velocita_circuito').value = (dist > 0 && totalTimeSec > 0) ? ((dist / totalTimeSec) * 3.6).toFixed(2) : '';
-            });
-        });
-
-        elements.performanceSelectorsContainer.addEventListener('change', (e) => { if (e.target.matches('.athlete-selector, .date-selector')) { const index = parseInt(e.target.dataset.index); const row = e.target.closest('.row'); performanceSelections[index].athleteId = row.querySelector('.athlete-selector').value; performanceSelections[index].date = row.querySelector('.date-selector').value; if(e.target.matches('.athlete-selector')) { populatePerformanceSelectors(); updatePerformanceChart(); } else { updatePerformanceChart(); } } });
-        elements.performanceSelectorsContainer.addEventListener('click', (e) => { const removeBtn = e.target.closest('.remove-selector'); if (removeBtn) { performanceSelections.splice(parseInt(removeBtn.dataset.index), 1); populatePerformanceSelectors(); updatePerformanceChart(); } });
-        elements.addComparisonBtn.addEventListener('click', () => { performanceSelections.push({ athleteId: null, date: null }); populatePerformanceSelectors(); });
-        elements.metricSelector.addEventListener('change', updatePerformanceChart);
-
-        elements.trendAthleteSelector.addEventListener('change', updateAthleteTrendChart);
-        elements.trendMetricSelector.addEventListener('change', updateAthleteTrendChart);
-        elements.radarAthleteSelector1.addEventListener('change', updateAthleteRadarChart);
-        elements.radarAthleteSelector2.addEventListener('change', updateAthleteRadarChart);
-
-        elements.multiAthleteTimeFilter.addEventListener('click', e => {
-            if(e.target.tagName === 'BUTTON'){
-                elements.multiAthleteTimeFilter.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                elements.multiAthleteDatepickerContainer.style.display = (e.target.dataset.period === 'day') ? 'block' : 'none';
-                if(e.target.dataset.period === 'day'){
-                   elements.multiAthleteDatepicker.closest('.col-md-3').classList.remove('d-none');
-                } else {
-                   elements.multiAthleteDatepicker.closest('.col-md-3').classList.add('d-none');
-                }
-                updateMultiAthleteChart();
-            }
-        });
-        elements.multiAthleteMetricSelector.addEventListener('change', updateMultiAthleteChart);
-        elements.multiAthleteDatepicker.addEventListener('change', updateMultiAthleteChart);
-        elements.multiAthleteResetBtn.addEventListener('click', () => {
-            elements.multiAthleteTimeFilter.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-            elements.multiAthleteTimeFilter.querySelector('.btn[data-period="month"]').classList.add('active');
-            elements.multiAthleteDatepicker.value = '';
-            elements.multiAthleteDatepickerContainer.style.display = 'none';
-            elements.multiAthleteMetricSelector.selectedIndex = 0;
-            elements.multiAthleteTypeSelector.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-            elements.multiAthleteTypeSelector.querySelector('.btn[data-type="all"]').classList.add('active');
-            multiAthleteFilterType = 'all';
-            updateMultiAthleteChart();
-        });
-
-        elements.deleteDayDataBtn.addEventListener('click', () => {
+        
+        elements.deleteDayDataBtn.addEventListener('click', async () => {
             const date = elements.evaluationDatePicker.value;
             if (!date) {
                 alert('Per favore, seleziona una data per poter eliminare i relativi dati.');
@@ -800,214 +754,158 @@
 
             const formattedDate = new Date(date).toLocaleDateString('it-IT');
             if (confirm(`Sei sicuro di voler eliminare TUTTI i dati (valutazioni, GPS e premi) del giorno ${formattedDate}? L'azione è irreversibile.`)) {
+                try {
+                    const { error: evalError } = await db.from('valutazioni').delete().eq('data_valutazione', date);
+                    if (evalError) throw evalError;
 
-                if (evaluations[date]) {
-                    delete evaluations[date];
-                }
+                    const { error: premError } = await db.from('premi').delete().eq('data_premio', date);
+                    if (premError) throw premError;
 
-                if (awards[date]) {
-                    delete awards[date];
-                }
+                    const { error: gpsError } = await db.from('sessioni_gps').delete().eq('data_registrazione', date);
+                    if (gpsError) throw gpsError;
 
-                Object.keys(gpsData).forEach(athleteId => {
-                    if (gpsData[athleteId] && gpsData[athleteId][date]) {
-                        delete gpsData[athleteId][date];
-                    }
-                });
-
-                saveData().then(updateAllUI);
-
-                alert(`Tutti i dati del giorno ${formattedDate} sono stati eliminati.`);
-            }
-        });
-
-        modalsContainer.addEventListener('click', (e) => {
-            if (e.target.id === 'delete-single-athlete-day-btn') {
-                const athleteId = document.getElementById('modal-athlete-id-eval').value;
-                const date = elements.evaluationDatePicker.value;
-                const athlete = athletes.find(a => a.id.toString() === athleteId);
-
-                if (!athleteId || !date || !athlete) {
-                    alert("Errore: Impossibile trovare i dati necessari per l'eliminazione.");
-                    return;
-                }
-
-                const formattedDate = new Date(date).toLocaleDateString('it-IT');
-                if (confirm(`Sei sicuro di voler eliminare tutti i dati di ${athlete.name} per il giorno ${formattedDate}?`)) {
-
-                    if (evaluations[date] && evaluations[date][athleteId]) {
-                        delete evaluations[date][athleteId];
-                    }
-
-                    if (gpsData[athleteId] && gpsData[athleteId][date]) {
-                        delete gpsData[athleteId][date];
-                    }
-
-                    if (awards[date]) {
-                        awards[date] = awards[date].filter(a => a.athleteId.toString() !== athleteId.toString());
-                        if (awards[date].length === 0) {
-                            delete awards[date];
-                        }
-                    }
-
-                    saveData().then(() => {
-                        evaluationModal.hide();
-                        updateAllUI();
-                        alert(`Dati di ${athlete.name} per il giorno ${formattedDate} eliminati.`);
-                    });
-                }
-            }
-            if (e.target.id === 'delete-gps-session-btn') {
-                const athleteId = document.getElementById('modal-athlete-id-gps').value;
-                const date = document.getElementById('gps-session-selector').value;
-                const athlete = athletes.find(a => a.id.toString() === athleteId);
-
-                if (!date || !athlete) {
-                    alert('Nessuna sessione valida selezionata per l\'eliminazione.');
-                    return;
-                }
-
-                if (confirm(`Sei sicuro di voler eliminare questa sessione di ${athlete.name} del ${new Date(date).toLocaleDateString('it-IT')}?`)) {
-                    if(gpsData[athleteId] && gpsData[athleteId][date]){
-                        delete gpsData[athleteId][date];
-                        saveData().then(() => {
-                            gpsModal.hide();
-                            updateAllUI();
-                        });
-                    }
+                    alert(`Tutti i dati del giorno ${formattedDate} sono stati eliminati.`);
+                } catch(error) {
+                    alert(`Errore durante l'eliminazione: ${error.message}`);
                 }
             }
         });
-
+        
+        // ... (other event listeners like date pickers, toggles etc.)
+        elements.evaluationDatePicker.addEventListener('change', () => { updateEvaluationCharts(); updateAttendanceChart(); });
+        elements.comparisonPeriodToggle.addEventListener('click', (e) => { if (e.target.dataset.period) { elements.comparisonPeriodToggle.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); comparisonChartPeriod = e.target.dataset.period; updateEvaluationCharts(); } });
+        elements.attendancePeriodToggle.addEventListener('click', (e) => { if (e.target.dataset.period) { elements.attendancePeriodToggle.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); attendanceChartPeriod = e.target.dataset.period; updateAttendanceChart(); } });
+        elements.performanceSelectorsContainer.addEventListener('change', (e) => { if (e.target.matches('.athlete-selector, .session-selector')) { const index = parseInt(e.target.dataset.index); const row = e.target.closest('.row'); performanceSelections[index].athleteId = row.querySelector('.athlete-selector').value; performanceSelections[index].sessionId = row.querySelector('.session-selector').value; if(e.target.matches('.athlete-selector')) { populatePerformanceSelectors(); updatePerformanceChart(); } else { updatePerformanceChart(); } } });
+        elements.performanceSelectorsContainer.addEventListener('click', (e) => { const removeBtn = e.target.closest('.remove-selector'); if (removeBtn) { performanceSelections.splice(parseInt(removeBtn.dataset.index), 1); populatePerformanceSelectors(); updatePerformanceChart(); } });
+        elements.addComparisonBtn.addEventListener('click', () => { performanceSelections.push({ athleteId: null, sessionId: null }); populatePerformanceSelectors(); });
+        elements.metricSelector.addEventListener('change', updatePerformanceChart);
+        elements.trendAthleteSelector.addEventListener('change', updateAthleteTrendChart);
+        elements.trendMetricSelector.addEventListener('change', updateAthleteTrendChart);
+        elements.radarAthleteSelector1.addEventListener('change', updateAthleteRadarChart);
+        elements.radarAthleteSelector2.addEventListener('change', updateAthleteRadarChart);
+        elements.multiAthleteTimeFilter.addEventListener('click', e => { if(e.target.tagName === 'BUTTON'){ elements.multiAthleteTimeFilter.querySelectorAll('.btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); elements.multiAthleteDatepickerContainer.style.display = (e.target.dataset.period === 'day') ? 'block' : 'none'; updateMultiAthleteChart(); } });
+        elements.multiAthleteMetricSelector.addEventListener('change', updateMultiAthleteChart);
+        elements.multiAthleteDatepicker.addEventListener('change', updateMultiAthleteChart);
+        elements.multiAthleteResetBtn.addEventListener('click', () => { elements.multiAthleteTimeFilter.querySelectorAll('.btn').forEach(b => b.classList.remove('active')); elements.multiAthleteTimeFilter.querySelector('.btn[data-period="month"]').classList.add('active'); elements.multiAthleteDatepicker.value = ''; elements.multiAthleteDatepickerContainer.style.display = 'none'; elements.multiAthleteMetricSelector.selectedIndex = 0; elements.multiAthleteTypeSelector.querySelectorAll('.btn').forEach(b => b.classList.remove('active')); elements.multiAthleteTypeSelector.querySelector('.btn[data-type="all"]').classList.add('active'); multiAthleteFilterType = 'all'; updateMultiAthleteChart(); });
+        elements.performanceFilterToggle.addEventListener('click', (e) => { if (e.target.matches('.btn')) { elements.performanceFilterToggle.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); performanceFilterType = e.target.dataset.type; populatePerformanceSelectors(); } });
+        elements.multiAthleteTypeSelector.addEventListener('click', (e) => { if (e.target.matches('.btn')) { elements.multiAthleteTypeSelector.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); multiAthleteFilterType = e.target.dataset.type; updateMultiAthleteChart(); } });
+        
         modalsContainer.addEventListener('change', (e) => {
             if (e.target.id === 'gps-session-selector') {
                 const athleteId = document.getElementById('modal-athlete-id-gps').value;
-                const date = e.target.value;
+                const sessionId = e.target.value;
                 const form = document.getElementById('gps-form');
                 const deleteBtn = document.getElementById('delete-gps-session-btn');
-
-                if (date && athleteId && gpsData[athleteId] && gpsData[athleteId][date]) {
-                    const data = gpsData[athleteId][date];
-                    allGpsFields.forEach(field => {
-                        const el = form.querySelector(`#gps-${field}`);
-                        if (el) { el.value = data[field] ?? ''; }
+                document.getElementById('modal-session-id-gps').value = sessionId;
+                if (sessionId && athleteId && gpsData[athleteId] && gpsData[athleteId][sessionId]) {
+                    const data = gpsData[athleteId][sessionId];
+                    Object.keys(data).forEach(key => {
+                        const el = form.querySelector(`#gps-${key}`);
+                        if(el) el.value = data[key] ?? '';
                     });
-
-                    const totalSec = data.tempo_circuito_totale_s || 0;
+                    const totalSec = data.tempo_circuito_s || 0;
                     form.querySelector('#gps-tempo_circuito_min').value = totalSec > 0 ? Math.floor(totalSec / 60) : '';
                     form.querySelector('#gps-tempo_circuito_sec').value = totalSec > 0 ? Math.floor(totalSec % 60) : '';
                     form.querySelector('#gps-tempo_circuito_cen').value = totalSec > 0 ? Math.round((totalSec - Math.floor(totalSec)) * 100) : '';
-
                     deleteBtn.disabled = false;
                 } else {
                     form.reset();
-                    form.querySelector('#gps-data_di_registrazione').valueAsDate = new Date();
+                    form.querySelector('#gps-data_registrazione').valueAsDate = new Date();
                     deleteBtn.disabled = true;
                 }
             }
         });
 
-        elements.exportAllDataBtn.addEventListener('click', () => {
-            const allData = { athletes, evaluations, gpsData, awards };
-            const dataStr = JSON.stringify(allData, null, 2);
-            const blob = new Blob([dataStr], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `coach_dashboard_backup_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+        elements.exportAllDataBtn.addEventListener('click', async () => {
+            if (!confirm("Verrà scaricato un file JSON con un backup completo di tutti i dati. Continuare?")) {
+                return;
+            }
+            try {
+                console.log("Esportazione dati in corso...");
+                const { data: atleti, error: e1 } = await db.from('atleti').select('*');
+                const { data: valutazioni, error: e2 } = await db.from('valutazioni').select('*');
+                const { data: sessioni_gps, error: e3 } = await db.from('sessioni_gps').select('*');
+                const { data: premi, error: e4 } = await db.from('premi').select('*');
+                if (e1 || e2 || e3 || e4) throw (e1 || e2 || e3 || e4);
+                const allData = { atleti, valutazioni, sessioni_gps, premi };
+                const dataStr = JSON.stringify(allData, null, 2);
+                const blob = new Blob([dataStr], {type: "application/json"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `coach_dashboard_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                console.log("Esportazione completata.");
+            } catch (error) {
+                alert(`Errore durante l'esportazione dei dati: ${error.message}`);
+            }
         });
 
         elements.importFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (!file) {
-                return;
-            }
+            if (!file) return;
             const reader = new FileReader();
-            reader.onload = (event) => {
-                if (confirm("ATTENZIONE: L'importazione sovrascriverà tutti i dati attuali. Vuoi continuare?")) {
-                    try {
-                        const importedData = JSON.parse(event.target.result);
-                        if (importedData && typeof importedData === 'object' && 'athletes' in importedData && 'evaluations' in importedData) {
-                            athletes = importedData.athletes || [];
-                            evaluations = importedData.evaluations || {};
-                            gpsData = importedData.gpsData || {};
-                            awards = importedData.awards || {};
-
-                            saveData().then(() => {
-                                updateAllUI();
-                                alert('Dati importati con successo!');
-                            });
-                        } else {
-                            alert('Errore: Il file non sembra avere il formato corretto.');
-                        }
-                    } catch (error) {
-                        alert(`Errore durante la lettura del file JSON: ${error.message}`);
+            reader.onload = async (event) => {
+                if (!confirm("ATTENZIONE: Stai per sovrascrivere TUTTI i dati presenti nel database con quelli del file. L'operazione è IRREVERSIBILE. Sei sicuro?")) {
+                    e.target.value = null;
+                    return;
+                }
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    if (!importedData.atleti || !importedData.valutazioni || !importedData.sessioni_gps || !importedData.premi) {
+                        throw new Error("Il file JSON non ha la struttura corretta.");
                     }
+                    console.log("Inizio importazione...");
+                    // Delete existing data
+                    console.log("Eliminazione dati vecchi...");
+                    await db.from('premi').delete().neq('id', -1);
+                    await db.from('sessioni_gps').delete().neq('id', -1);
+                    await db.from('valutazioni').delete().neq('id', -1);
+                    await db.from('atleti').delete().neq('id', -1);
+                    // Insert new data
+                    console.log("Inserimento dati nuovi...");
+                    await db.from('atleti').insert(importedData.atleti);
+                    await db.from('valutazioni').insert(importedData.valutazioni);
+                    await db.from('sessioni_gps').insert(importedData.sessioni_gps);
+                    await db.from('premi').insert(importedData.premi);
+                    alert('Importazione completata con successo! Ricarico i dati.');
+                    await initializeApp();
+                } catch (error) {
+                    alert(`Errore durante l'importazione: ${error.message}`);
+                } finally {
+                    e.target.value = null;
                 }
             };
             reader.readAsText(file);
-            e.target.value = null;
         });
 
-        elements.performanceFilterToggle.addEventListener('click', (e) => {
-            if (e.target.matches('.btn')) {
-                elements.performanceFilterToggle.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active');
-                performanceFilterType = e.target.dataset.type;
-                populatePerformanceSelectors();
-            }
-        });
-
-        elements.multiAthleteTypeSelector.addEventListener('click', (e) => {
-            if (e.target.matches('.btn')) {
-                elements.multiAthleteTypeSelector.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active');
-                multiAthleteFilterType = e.target.dataset.type;
-                updateMultiAthleteChart();
-            }
-        });
-
-        document.addEventListener('click', (e) => {
-            const exportExcelBtn = e.target.closest('#export-excel');
-            const exportPdfBtn = e.target.closest('#export-pdf');
-            if (exportExcelBtn) {
-                const validSelections = performanceSelections.filter(s => s.athleteId && s.date); if (validSelections.length === 0) return;
-                const data = validSelections.map(selection => { const athlete = athletes.find(a => a.id.toString() === selection.athleteId.toString()); const gpsRecord = gpsData[selection.athleteId]?.[selection.date] || {}; const row = { Atleta: athlete?.name || 'N/A', Data: new Date(selection.date).toLocaleDateString('it-IT') }; Object.entries(gpsFieldsForDisplay).forEach(([key, label]) => { row[label] = gpsRecord[key] ?? 'N/A'; }); return row; });
-                const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Performance"); XLSX.writeFile(wb, `performance_${new Date().toISOString().split('T')[0]}.xlsx`);
-            } else if (exportPdfBtn) {
-                const validSelections = performanceSelections.filter(s => s.athleteId && s.date); if (validSelections.length === 0) return;
-                const { jsPDF } = window.jspdf; const doc = new jsPDF({orientation: 'landscape'});
-                const head = ['Atleta', 'Data', ...Object.values(gpsFieldsForDisplay)];
-                const body = validSelections.map(selection => { const athlete = athletes.find(a => a.id.toString() === selection.athleteId.toString()); const gpsRecord = gpsData[selection.athleteId]?.[selection.date] || {}; return [ athlete?.name || 'N/A', new Date(selection.date).toLocaleDateString('it-IT'), ...Object.keys(gpsFieldsForDisplay).map(key => gpsRecord[key] ?? 'N/A') ]; });
-                doc.autoTable({ head: [head], body, styles: { fontSize: 6 }, headStyles: { fillColor: [10, 36, 99] }, columnStyles: { 0: {cellWidth: 20}, 1: {cellWidth: 18} } });
-                doc.save(`performance_${new Date().toISOString().split('T')[0]}.pdf`);
-            }
-        });
+        // ========================================================================
+        // INITIALIZATION AND REAL-TIME LISTENER
+        // ========================================================================
 
         async function initializeApp() {
             await loadData();
             updateAllUI();
-
-            setInterval(async () => {
-                const currentDataSnapshot = JSON.stringify({ athletes, evaluations, gpsData, awards });
-                await loadData();
-                const newDataSnapshot = JSON.stringify({ athletes, evaluations, gpsData, awards });
-
-                if (currentDataSnapshot !== newDataSnapshot) {
-                    console.log("Dati aggiornati dal server. Ricarico l'interfaccia.");
-                    updateAllUI();
-                }
-            }, 5000);
-
+            
             elements.evaluationDatePicker.valueAsDate = new Date();
             elements.multiAthleteDatepicker.valueAsDate = new Date();
         }
 
         initializeApp();
+
+        // Real-time listener
+        db.channel('public-db-changes')
+            .on('postgres_changes', { event: '*', schema: 'public' }, async (payload) => {
+                console.log('Modifica ricevuta dal database!', payload);
+                // Simple but effective: reload all data and refresh the UI
+                await loadData();
+                updateAllUI();
+            })
+            .subscribe();
+
     });
     </script>
 </body>
